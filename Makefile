@@ -39,5 +39,6 @@ kernel.bin: kernel/kernel_entry.o ${OBJ}
 	nasm $< -f bin -I '../../16 bit/' -o $@
 
 clean:
-	rm -fr *.bin *.dis *.o os-image *.tmp
-	rm -fr kernel/*.o boot/*.bin drivers/*.o
+	rm -rf *.bin *.dis *.o os-image *.tmp
+	rm -rf kernel/*.o boot/*.bin drivers/*.o
+	rm -rf boot/disk/*.bin boot/print/*.bin

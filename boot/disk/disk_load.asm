@@ -23,5 +23,11 @@ disk_error:
     call print_string
     jmp $
 
+sector_error:
+    mov bx, SECTOR_ERROR_MSG
+    call print_string
+    jmp $
+
 ; Variables
 DISK_ERROR_MSG  db "Disk read error!", 0
+SECTOR_ERROR_MSG  db "Sector mismatch error!", 0
