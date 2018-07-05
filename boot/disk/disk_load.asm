@@ -11,16 +11,18 @@ disk_load:
                                 ; after the boot sector)
     int 0x13                    ; BIOS interrupt
 
-    je disk_error               ; Jump if error (i.e. carry flag set)
+    jc disk_error               ; Jump if error (i.e. carry flag set)
 
     pop dx                      ; Restore DX from the stack
     cmp dh, al                  ; if AL (sectors read) != DH (sectors expected)
-    jne disk_error              ;   display error message
+    jne sector_error              ;   display error message
     ret
 
 disk_error:
     mov bx, DISK_ERROR_MSG
     call print_string
+    mov dx, ax
+    call print_hex
     jmp $
 
 sector_error:

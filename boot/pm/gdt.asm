@@ -35,7 +35,7 @@ gdt_end:            ; The reason for putting a label at the end of the
 gdt_descriptor:
     dw gdt_end - gdt_start - 1 ; Size of our GDT, always less one
                     ; of the true size
-    dw gdt_start                ; Start address of our GDT
+    dd gdt_start                ; Start address of our GDT
 
 ; Define some handy constants for the GDT segment descriptor offsets, which
 ; are what segment registers must contain when in protected mode. For example,

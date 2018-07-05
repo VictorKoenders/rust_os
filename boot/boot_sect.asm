@@ -20,6 +20,7 @@ KERNEL_OFFSET equ 0x1000    ; This is the memory offset to which we will load ou
 
 ; Include our useful, hard-earned routines
 %include "boot/print/print_string.asm"
+%include "boot/print/print_hex.asm"
 %include "boot/disk/disk_load.asm"
 %include "boot/pm/gdt.asm"
 %include "boot/pm/print_string_pm.asm"

@@ -1,6 +1,7 @@
 # Automatically generate lists of sources using wildcards.
 C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
 HEADERS = $(wildcard kernel/*.h drivers/*.h)
+ASM_FILES = $(wildcard boot/*.asm boot/disk/*.asm boot/pm/*.asm boot/print/*.asm)
 
 # TODO: Make sources dep on all header files.
 
@@ -35,6 +36,9 @@ kernel.bin: kernel/kernel_entry.o ${OBJ}
 %.o : %.asm
 	nasm $< -f elf -o $@
 
+boot/boot_sect.bin : boot/boot_sect.bin ${ASM_FILES}
+	nasm $< -f bin -I '../../16 bit/' -o $@
+
 %.bin : %.asm
 	nasm $< -f bin -I '../../16 bit/' -o $@
 
@@ -42,3 +46,7 @@ clean:
 	rm -rf *.bin *.dis *.o os-image *.tmp
 	rm -rf kernel/*.o boot/*.bin drivers/*.o
 	rm -rf boot/disk/*.bin boot/print/*.bin
+
+# Disassemble our kernel - might be useful for debugging.
+kernel.dis: kernel.bin
+	ndisasm -b 32 $< > $@
