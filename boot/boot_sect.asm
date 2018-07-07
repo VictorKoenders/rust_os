@@ -1,3 +1,6 @@
+; Args:
+; -DKERNEL_SIZE=x           Set the size of the kernel that's to be appended after this file
+
 ; A boot sector that boots a C kernel in 32-bit protected mode
 [org 0x7c00]
 KERNEL_OFFSET equ 0x1000    ; This is the memory offset to which we will load our kernel
@@ -18,14 +21,6 @@ KERNEL_OFFSET equ 0x1000    ; This is the memory offset to which we will load ou
 
     jmp $
 
-; Include our useful, hard-earned routines
-%include "boot/print/print_string.asm"
-%include "boot/print/print_hex.asm"
-%include "boot/disk/disk_load.asm"
-%include "boot/pm/gdt.asm"
-%include "boot/pm/print_string_pm.asm"
-%include "boot/pm/switch_to_pm.asm"
-
 [bits 16]
 
 ; load_kernel
@@ -34,11 +29,21 @@ load_kernel:
     call print_string
 
     mov bx, KERNEL_OFFSET   ; Set-up parameters for our disk_load routine, so
-    mov dh, 1               ; that we can load the first 2 sectors (excluding
-    mov dl, [BOOT_DRIVE]    ; the boot sector) from the boot disk (i.e. our
-    call disk_load          ; kernel code) to address KERNEL_OFFSET
+    ; Passed from the commandline with -DKERNEL_SIZE=...
+    mov dh, (KERNEL_SIZE + 511) / 512
+    mov dl, [BOOT_DRIVE]
+    call disk_load
 
     ret
+
+; Include our useful, hard-earned routines
+%include "boot/print/print_string.asm"
+%include "boot/print/print_hex.asm"
+%include "boot/disk/disk_load.asm"
+%include "boot/pm/gdt.asm"
+%include "boot/pm/print_string_pm.asm"
+%include "boot/pm/switch_to_pm.asm"
+
 
 [bits 32]
 ; This is where we arrive after switching to and initializing protected mode.

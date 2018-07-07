@@ -1,4 +1,8 @@
-void start() {
-    char* video_memory = (char*)0xb8000;
-    *video_memory = 'X';
+#include "../drivers/screen.h"
+
+void start()
+{
+    clear_screen();
+    char message[] = "Hello from C";
+    print(message);
 }

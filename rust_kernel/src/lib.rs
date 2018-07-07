@@ -1,24 +1,21 @@
+#![feature(panic_implementation, abi_x86_interrupt, lang_items)]
+#![crate_type = "dylib"]
 #![no_std]
 
-extern crate spin;
-extern crate volatile;
-#[macro_use]
-extern crate lazy_static;
-extern crate uart_16550;
-extern crate x86_64;
+use core::panic::PanicInfo;
+use core::ptr;
 
-#[cfg(test)]
-extern crate array_init;
-#[cfg(test)]
-extern crate std;
-
-pub mod vga_buffer;
-pub mod serial;
-pub mod gdt;
-
-pub unsafe fn exit_qemu() {
-    use x86_64::instructions::port::Port;
-
-    let mut port = Port::<u32>::new(0xf4);
-    port.write(0);
+#[no_mangle]
+pub unsafe extern "C" fn _start() {
+    let memory = 0xb8000 as *mut u8;
+    for (index, c) in b"Hello from Rust".into_iter().enumerate() {
+        ptr::write_volatile(memory.offset(index as isize * 2), *c);
+    }
 }
+
+#[panic_implementation]
+fn my_panic(_pi: &PanicInfo) -> ! {
+    loop {}
+}
+
+#[lang = "eh_personality"] extern fn eh_personality() {}
